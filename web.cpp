@@ -6,12 +6,16 @@
 
 emp::web::Document doc{"target"};
 
+// Create random generator and world
+emp::Random random_gen_2(5);
+OrgWorld world{random_gen_2};
+
 class AEAnimator : public emp::web::Animate {
 
     // arena width and height
     const int num_h_boxes = 10;
     const int num_w_boxes = 10;
-    const double RECT_SIDE = 10;
+    const double RECT_SIDE = 20;
     const double width{num_w_boxes * RECT_SIDE};
     const double height{num_h_boxes * RECT_SIDE};
 
@@ -26,15 +30,40 @@ class AEAnimator : public emp::web::Animate {
         doc << GetToggleButton("Toggle");
         doc << GetStepButton("Step");
 
+        Organism* new_org = new Organism(&random_gen_2);
+        world.Inject(*new_org);
+        world.Resize(10, 10);
+
+        world.SetPopStruct_Grid(num_w_boxes, num_h_boxes);
+
+        DrawSqaures();
+
     }
 
     void DoFrame() override {
         canvas.Clear();
+        world.Update();
+        DrawSqaures();
+    }
 
+    void DrawSqaures() {
+        int org_num = 0;
+        for (int x = 0; x < num_w_boxes; x++){
+            for (int y = 0; y < num_h_boxes; y++) {
+                if (world.IsOccupied(org_num)) {
+                    canvas.Rect(x * RECT_SIDE, y * RECT_SIDE, RECT_SIDE, RECT_SIDE, "black", "black");
+                } else {
+                    canvas.Rect(x * RECT_SIDE, y * RECT_SIDE, RECT_SIDE, RECT_SIDE, "white", "black");
+                }
+                org_num++;
+            }
+        }
     }
 
 };
 
 AEAnimator animator;
 
-int main() {animator.Step();}
+int main() {
+    animator.Step();
+}

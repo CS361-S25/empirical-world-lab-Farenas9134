@@ -22,9 +22,29 @@ class OrgWorld : public emp::World<Organism> {
     }
 
   void Update() {
-      emp::World<Organism>::Update();
-      std::cout << "Updating!" << std::endl; //feel free to get rid of this     
-  }
+    double pointsPerUpdate = 100;
+
+    emp::World<Organism>::Update();
+
+    emp::vector<size_t> schedule1 = emp::GetPermutation(random, GetSize());
+    emp::vector<size_t> schedule2 = emp::GetPermutation(random, GetSize());
+
+    for (int i :schedule1){
+        if(IsOccupied(i)){
+            pop[i]->Process(pointsPerUpdate);
+        }
+    }
+
+    for (int i : schedule2){
+        if(IsOccupied(i)){
+            emp::Ptr<Organism> offspring = pop[i]->CheckReproduction();
+            if (offspring){
+                DoBirth(*offspring, i);
+            }
+        }
+    }
+
+  } 
 
 };
 #endif
