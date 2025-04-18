@@ -43,8 +43,15 @@ class OrgWorld : public emp::World<Organism> {
             }
         }
     }
+}
 
-  } 
+    emp::Ptr<Organism> ExtractOrganism(int orgPos){
+        emp::Ptr<Organism> extracted_org = pop[orgPos];
+        pop[orgPos] = nullptr;
+
+        emp::WorldPosition newPosition = GetRandomNeighborPos(orgPos);
+        AddOrgAt(extracted_org, newPosition);
+    }
 
 };
 #endif
